@@ -1,0 +1,29 @@
+
+.auth-profile {
+
+    &__profile {
+        cursor: pointer;
+        &__name {
+            margin-right: 0.5rem;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+    }
+
+    &__dropdown {
+        margin-top: 0.5rem;
+    }
+
+    &__logout {
+        border: none;
+        padding: 0.25rem;
+        color: grey;
+        background-color: white;
+    }
+
+    &__logout:hover {
+        background-color: #489075;
+        color: white;
+        cursor: pointer;
+    }
+}

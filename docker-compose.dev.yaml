@@ -1,0 +1,24 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:11
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: contacts
+    ports:
+      - 5431:5432
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:13.0.1
+    environment:
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_USER: admin
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: contacts
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    ports:
+      - 8081:8080
