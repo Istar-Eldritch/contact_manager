@@ -304,7 +304,7 @@ dependencies = [
  "pin-project-lite 0.2.6",
  "pin-utils",
  "slab",
- "wasm-bindgen-futures 0.4.24",
+ "wasm-bindgen-futures",
 ]
 
 [[package]]
@@ -558,16 +558,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "console-web"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9dece1fbce239acb9fa5ccd2ea95baa06c58af686f7491ae4557f3d63796dd83"
-dependencies = [
- "js-sys",
- "web-sys",
-]
-
-[[package]]
 name = "console_error_panic_hook"
 version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -596,14 +586,13 @@ dependencies = [
  "anyhow",
  "async-trait",
  "getrandom 0.2.3",
- "indexeddb",
  "js-sys",
  "log",
  "serde",
  "urlencoding",
  "uuid",
  "wasm-bindgen",
- "wasm-bindgen-futures 0.4.24",
+ "wasm-bindgen-futures",
  "wasm-logger",
  "web-sys",
  "wee_alloc",
@@ -937,12 +926,6 @@ name = "funty"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fed34cd105917e91daa4da6b3728c47b068749d6a62c59811f06ed2ac71d9da7"
-
-[[package]]
-name = "futures"
-version = "0.1.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a471a38ef8ed83cd6e40aa59c1ffe17db6855c18e3604d9c4ed8c08ebc28678"
 
 [[package]]
 name = "futures"
@@ -1303,19 +1286,6 @@ dependencies = [
  "matches",
  "unicode-bidi",
  "unicode-normalization",
-]
-
-[[package]]
-name = "indexeddb"
-version = "0.1.0"
-dependencies = [
- "console-web",
- "futures 0.1.31",
- "js-sys",
- "lazy_static",
- "wasm-bindgen",
- "wasm-bindgen-futures 0.3.27",
- "web-sys",
 ]
 
 [[package]]
@@ -2263,7 +2233,7 @@ checksum = "47e4a2349d1ffd60a03ca0de3f116ba55d7f406e55a0d84c64a5590866d94c06"
 dependencies = [
  "dotenv",
  "either",
- "futures 0.3.15",
+ "futures",
  "heck",
  "once_cell",
  "proc-macro2",
@@ -2741,19 +2711,6 @@ dependencies = [
 
 [[package]]
 name = "wasm-bindgen-futures"
-version = "0.3.27"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83420b37346c311b9ed822af41ec2e82839bfe99867ec6c54e2da43b7538771c"
-dependencies = [
- "cfg-if 0.1.10",
- "futures 0.1.31",
- "js-sys",
- "wasm-bindgen",
- "web-sys",
-]
-
-[[package]]
-name = "wasm-bindgen-futures"
 version = "0.4.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fba7978c679d53ce2d0ac80c8c175840feb849a161664365d1287b41f2e67f1"
@@ -2924,7 +2881,7 @@ dependencies = [
  "slab",
  "thiserror",
  "wasm-bindgen",
- "wasm-bindgen-futures 0.4.24",
+ "wasm-bindgen-futures",
  "web-sys",
  "yew-macro",
 ]
@@ -2950,7 +2907,7 @@ checksum = "8543663ac49cd613df079282a1d8bdbdebdad6e02bac229f870fd4237b5d9aaa"
 dependencies = [
  "log",
  "wasm-bindgen",
- "wasm-bindgen-futures 0.4.24",
+ "wasm-bindgen-futures",
  "web-sys",
  "yew",
 ]
