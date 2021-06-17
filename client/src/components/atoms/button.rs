@@ -1,17 +1,17 @@
 use yew::prelude::*;
 
 pub struct Button {
-    on_click: Callback<MouseEvent>,
-    text: String,
-    class: Classes,
+    props: ButtonProps,
 }
 
 #[derive(Properties, Clone)]
 pub struct ButtonProps {
     pub onclick: Callback<MouseEvent>,
-    pub text: String,
     #[prop_or_default]
     pub class: Classes,
+    pub children: Children,
+    #[prop_or_default]
+    pub disabled: bool,
 }
 
 impl Component for Button {
@@ -20,11 +20,7 @@ impl Component for Button {
 
     fn create(mut props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         props.class.push("button");
-        Self {
-            on_click: props.onclick,
-            text: props.text,
-            class: props.class,
-        }
+        Self { props }
     }
 
     fn update(&mut self, _msg: Self::Message) -> ShouldRender {
@@ -32,17 +28,15 @@ impl Component for Button {
     }
 
     fn change(&mut self, props: Self::Properties) -> ShouldRender {
-        self.on_click = props.onclick;
-        let should_render = self.text.ne(&props.text);
-        self.text = props.text;
-        self.class = props.class;
-        self.class.push("button");
+        let should_render = self.props.children.ne(&props.children);
+        self.props = props;
+        self.props.class.push("button");
         should_render
     }
 
     fn view(&self) -> Html {
         html! {
-            <button class=self.class.clone() onclick=self.on_click.clone()>{ self.text.clone() }</button>
+            <button disabled={self.props.disabled} class=self.props.class.clone() onclick=self.props.onclick.clone()>{ self.props.children.clone() }</button>
         }
     }
 }

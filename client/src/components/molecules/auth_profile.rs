@@ -98,13 +98,13 @@ impl Component for AuthProfile {
                         <i class="fas fa-chevron-down"/>
                     </div>
                     <Dropdown visible={self.dropdown_open} class=classes!("auth-profile__dropdown")>
-                        <Button class=classes!("auth-profile__logout") onclick=self.link.callback(|_| Msg::Logout) text={"Logout"}/>
+                        <Button class=classes!("auth-profile__logout") onclick=self.link.callback(|_| Msg::Logout)>{"Logout"}</Button>
                     </Dropdown>
                 </div>
             }
         } else {
             html! {
-                <Button onclick=self.link.callback(|_| Msg::Login) text={"Login"}/>
+                <Button onclick=self.link.callback(|_| Msg::Login)>{"Login"}</Button>
             }
         };
 

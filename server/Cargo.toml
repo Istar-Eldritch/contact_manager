@@ -1,0 +1,23 @@
+[package]
+name = "server"
+version = "0.1.0"
+authors = ["Ruben Paz <me@ruben.io>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-std = { version = "1.9.0", features = [ "attributes" ] }
+common = { path = "../common" }
+jsonwebtoken = "7.2.0"
+log = "0.4.14"
+pretty_env_logger = "0.4.0"
+serde = "1.0.126"
+serde_json = "1.0.64"
+sqlx = { version = "0.5.5", features = [ "postgres", "runtime-async-std-rustls" ] }
+surf = "2.2.0"
+tide = "0.16.0"
+uuid = { version = "0.8.2", features = [ "v4", "serde" ] }
+event-sauce = { version = "0.1.0", git = "https://github.com/jamwaffles/event-sauce.git", rev = "f9fe3c403eeab3cc39b62c95968992b4aea1ffd2" }
+event-sauce-derive = { version = "0.1.0", git = "https://github.com/jamwaffles/event-sauce.git", rev = "f9fe3c403eeab3cc39b62c95968992b4aea1ffd2" }
+event-sauce-storage-sqlx = { version = "0.1.0", git = "https://github.com/jamwaffles/event-sauce.git", rev = "f9fe3c403eeab3cc39b62c95968992b4aea1ffd2", features = [ "with-postgres" ] }
