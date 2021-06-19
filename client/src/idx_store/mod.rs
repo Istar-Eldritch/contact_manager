@@ -2,7 +2,11 @@ use futures::{
     future::{self, Either},
     Future,
 };
-use std::{ops::Deref, pin::Pin, task::Poll};
+use std::{
+    ops::Deref,
+    sync::{Arc, Mutex},
+    task::{Poll, Waker},
+};
 use wasm_bindgen::{prelude::*, JsCast, JsValue};
 use web_sys::{
     window, IdbDatabase, IdbFactory, IdbOpenDbRequest, IdbRequestReadyState, IdbVersionChangeEvent,
@@ -25,7 +29,11 @@ impl Deref for IdxDb {
 
 struct IdxOpenDbRequest {
     _onupgradeneeded: Closure<dyn Fn(IdbVersionChangeEvent)>,
+    _onanything: Option<Closure<dyn FnMut()>>,
     request: IdbOpenDbRequest,
+    // onsuccess: Option<Closure<dyn FnMut()>>,
+    // onerror: Option<Closure<dyn FnMut()>>,
+    waker: Arc<Mutex<Option<Waker>>>,
 }
 
 impl Deref for IdxOpenDbRequest {
@@ -43,7 +51,8 @@ impl Future for IdxOpenDbRequest {
         log::debug!("Request state: {:?}", self.request.ready_state());
         match self.request.ready_state() {
             IdbRequestReadyState::Pending => {
-                // cx.waker().wake_by_ref();
+                self.waker.lock().unwrap().replace(cx.waker().clone());
+
                 Poll::Pending
             }
             IdbRequestReadyState::Done => {
@@ -97,9 +106,23 @@ impl IdxDb {
         }) as Box<dyn Fn(IdbVersionChangeEvent)>);
         request.set_onupgradeneeded(Some(&_onupgradeneeded.as_ref().unchecked_ref()));
 
+        let waker: Arc<Mutex<Option<Waker>>> = Arc::new(Mutex::new(None));
+        let inner_waker = waker.clone();
+
+        let onanything = Closure::once(Box::new(move || {
+            if let Some(waker) = inner_waker.lock().unwrap().take() {
+                waker.wake()
+            }
+        }));
+
+        request.set_onsuccess(Some(onanything.as_ref().unchecked_ref()));
+        request.set_onerror(Some(onanything.as_ref().unchecked_ref()));
+
         Either::Left(IdxOpenDbRequest {
             _onupgradeneeded,
             request,
+            _onanything: Some(onanything),
+            waker: waker,
         })
     }
 }

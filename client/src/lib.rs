@@ -81,12 +81,18 @@ impl Component for Model {
         }) as Box<dyn Fn()>);
         let _on_auth_logout_handle = keycloak.on_auth_logout(cb);
 
-        IdxDb::open("demo", 1, |_, db| {
-            log::debug!("In here");
-            let obj = db.create_object_store("pemento").unwrap();
-            log::debug!("Object store pemento created: {:?}", obj);
-            let obj = db.create_object_store("chourizo").unwrap();
-            log::debug!("Object store chourizo created: {:?}", obj);
+        link.send_future(async move {
+            let db = IdxDb::open("demo", 1, |_, db| {
+                log::debug!("In here");
+                let obj = db.create_object_store("pemento").unwrap();
+                log::debug!("Object store pemento created: {:?}", obj);
+                let obj = db.create_object_store("chourizo").unwrap();
+                log::debug!("Object store chourizo created: {:?}", obj);
+            })
+            .await
+            .expect("DB open failed");
+
+            Msg::DBReady(db)
         });
 
         // let transaction: IdbTransaction = db.transaction().unwrap();
