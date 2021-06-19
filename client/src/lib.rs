@@ -2,16 +2,14 @@ mod components;
 pub mod idx_store;
 pub mod keycloak;
 
-use std::rc::Rc;
-
 use anyhow::Error;
 use components::organisms::NavBar;
+use idx_store::IdxDb;
 use serde::{Deserialize, Serialize};
-use wasm_bindgen::{convert::IntoWasmAbi, prelude::Closure, JsCast, JsValue};
-use web_sys::{
-    window, IdbDatabase, IdbFactory, IdbOpenDbRequest, IdbRequest, IdbRequestReadyState,
-    IdbTransaction, IdbTransactionMode,
-};
+use std::rc::Rc;
+use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
+use wasm_bindgen_futures::spawn_local;
+use web_sys::{IdbRequest, IdbTransaction, IdbTransactionMode};
 use yew::{
     format::Nothing,
     prelude::*,
@@ -31,7 +29,7 @@ pub enum Msg {
     KeycloakStateChanged,
     ClickButton,
     Response,
-    DBReady,
+    DBReady(IdxDb),
 }
 
 pub struct Model {
@@ -41,15 +39,12 @@ pub struct Model {
     _link: ComponentLink<Model>,
     _on_auth_success_handle: CallbackHandle,
     _on_auth_logout_handle: CallbackHandle,
-    _db_callback: Closure<dyn Fn()>,
-    _on_upgrade_callback: Closure<dyn Fn()>,
     _insert_request: Option<(
         IdbTransaction,
         IdbRequest,
         Closure<dyn Fn()>,
         Closure<dyn Fn()>,
     )>,
-    db: IdbOpenDbRequest,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -86,31 +81,13 @@ impl Component for Model {
         }) as Box<dyn Fn()>);
         let _on_auth_logout_handle = keycloak.on_auth_logout(cb);
 
-        let factory: IdbFactory = window().unwrap().indexed_db().unwrap().unwrap();
-
-        let db = factory.open("demo").unwrap();
-
-        let db_ready_cb = link.callback(|_| Msg::DBReady);
-
-        let callback = Closure::wrap(Box::new(move || {
-            log::debug!("Loaded");
-            db_ready_cb.emit(());
-        }) as Box<dyn Fn()>);
-
-        db.set_onsuccess(Some(&callback.as_ref().unchecked_ref()));
-
-        let db_request = db.clone();
-
-        let _on_upgrade_callback = Closure::wrap(Box::new(move || {
-            log::debug!("Loaded");
-            let db: IdbDatabase = db_request.result().unwrap().unchecked_into();
+        IdxDb::open("demo", 1, |_, db| {
+            log::debug!("In here");
             let obj = db.create_object_store("pemento").unwrap();
             log::debug!("Object store pemento created: {:?}", obj);
             let obj = db.create_object_store("chourizo").unwrap();
             log::debug!("Object store chourizo created: {:?}", obj);
-        }) as Box<dyn Fn()>);
-
-        db.set_onupgradeneeded(Some(&_on_upgrade_callback.as_ref().unchecked_ref()));
+        });
 
         // let transaction: IdbTransaction = db.transaction().unwrap();
 
@@ -121,10 +98,7 @@ impl Component for Model {
             _link: link,
             _on_auth_success_handle,
             _on_auth_logout_handle,
-            _db_callback: callback,
-            _on_upgrade_callback,
             _insert_request: None,
-            db,
         }
     }
 
@@ -161,9 +135,8 @@ impl Component for Model {
                 log::debug!("Response!");
                 true
             }
-            Msg::DBReady => {
+            Msg::DBReady(db) => {
                 log::debug!("Db Ready");
-                let db: IdbDatabase = self.db.result().unwrap().unchecked_into();
                 log::debug!("Got db {:?}", db);
                 let transaction = db
                     .transaction_with_str_and_mode("pemento", IdbTransactionMode::Readwrite)
